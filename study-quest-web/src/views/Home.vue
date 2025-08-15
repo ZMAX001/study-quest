@@ -118,7 +118,7 @@ const goToLogin = () => {
 
 const showDemo = () => {
   // 显示演示功能
-  ElMessage.info('演示功能开发中...')
+  console.log('演示功能开发中...')
 }
 </script>
 
