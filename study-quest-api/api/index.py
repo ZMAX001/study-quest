@@ -1,0 +1,1 @@
+from main import app  # Vercel Python 运行时会识别顶层变量 `app` 作为 ASGI 应用 
