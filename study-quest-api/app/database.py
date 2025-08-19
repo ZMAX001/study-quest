@@ -3,18 +3,22 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float
 from sqlalchemy.sql import func
+from sqlalchemy.pool import NullPool
 from typing import AsyncGenerator
 import os
 
-# 数据库URL
+# 数据库URL（建议使用 Supabase/Neon 的连接串，并包含 ?sslmode=require）
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost/study_quest")
 
-# 创建异步引擎
+# 创建异步引擎（无服务器环境：禁用连接池与 prepared statements）
 engine = create_async_engine(
     DATABASE_URL,
-    echo=True,  # 开发环境下显示SQL语句
-    pool_pre_ping=True,
-    pool_recycle=300,
+    echo=bool(os.getenv("SQL_ECHO", "")),
+    poolclass=NullPool,
+    connect_args={
+        # 关闭 asyncpg 的语句缓存，避免在 PgBouncer 下出现 prepared statement 错误
+        "statement_cache_size": 0,
+    },
 )
 
 # 创建异步会话工厂
