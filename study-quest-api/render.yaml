@@ -1,0 +1,40 @@
+services:
+  # 开发版本 - 快速上线验证（无需数据库）
+  - type: web
+    name: study-quest-api-dev
+    env: python
+    plan: free
+    sourceDir: .
+    buildCommand: pip install -r requirements-dev.txt
+    startCommand: uvicorn main-dev:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 8000
+
+  # 完整版本 - 生产环境（需要数据库）
+  - type: web
+    name: study-quest-api-prod
+    env: python
+    plan: free
+    sourceDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: study-quest-db
+          property: connectionString
+
+databases:
+  - name: study-quest-db
+    databaseName: studyquest
+    user: studyquest_user
+    plan: free 
